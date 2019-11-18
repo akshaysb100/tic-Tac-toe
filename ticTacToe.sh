@@ -136,6 +136,8 @@ do
 	#checkWinnerColumn
 	checkWinnerDiagonal
         ((swithPlayerCount++))
+
 done
+
 
 
