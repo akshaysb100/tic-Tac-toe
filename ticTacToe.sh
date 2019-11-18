@@ -10,7 +10,7 @@ player=""
 computer=""
 whoPlay=""
 winner=false
-
+swithPlayerCount=0
 #ARRAYS
 declare -a playerBoardPosition
 
@@ -68,6 +68,18 @@ function playerPlay() {
 	fi
 }
 
+function computerPlay() {       
+	
+        local computerPosition=$((RANDOM%9+1))
+	if [[ ${playerBoardPosition[$computerPosition]} != $player ]] && [[ ${playerBoardPosition[$computerPosition]} != $computer ]]
+	then 
+                echo "insert computer position"
+	        playerBoardPosition[$computerPosition]=$computer
+        else
+		echo "coputer weong move"
+                computerPlay
+	fi
+}
 
 function displayBoard() {
       
@@ -102,7 +114,14 @@ function checkWinner() {
                 
 	if [[ $1 == $2  ]] && [[ $1 == $3 ]] && [[ $2 == $3 ]]  
 	then
-		echo " $whoPlay wins "
+ 		displayBoard
+		if [ $whoPlay == $player ]
+		then			
+			echo "player win"
+                else
+			echo "computer win"
+		fi
+		
 		exit
 		
 	fi      
@@ -118,18 +137,33 @@ function checkWinnerDiagonal() {
 		
 }
 
+
+echo  "--------------------------- main function --------------------------------"
+
 initialisingBoard
 playerSymbol
 computerSymbol
 toss
-swithPlayerCount=1
-while [ $swithPlayerCount -le $MAX_BOARD_POSITION ]
+echo "computer symbole" $computer
+echo "player symbole" $player
+echo "play first " $whoPlay
+while [ $swithPlayerCount -le $(($MAX_BOARD_POSITION-1)) ]
 do
-	
-	playerPlay
+       
+       if [ $whoPlay == $player ]
+	then    
+		playerPlay
+		checkWinnerRowColumn
+                checkWinnerDiagonal 
+                whoPlay=$computer
+	else
+		computerPlay
+	        checkWinnerRowColumn
+                checkWinnerDiagonal 
+		whoPlay=$player
+	fi
+
 	displayBoard
-	checkWinnerRowColumn
-	checkWinnerDiagonal
         ((swithPlayerCount++))
 done
 
