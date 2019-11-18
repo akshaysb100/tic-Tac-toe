@@ -54,8 +54,26 @@ function toss() {
 	fi
 	echo $whoPlay
 }
-initialisingBoard
-computerSymbol
-toss
-echo "computer" $computer
-echo "player" $player
+
+function play()
+{       
+ 
+        local syambol=$( playerSymbol )
+	read -p "Enter the player position to insert the $syambol :" position 
+        playerBoardPosition[$position]=$syambol
+}
+
+function displayBoard() {
+   initialisingBoard
+   play
+   echo "     ___ ___ ___ "
+   echo "    | ${playerBoardPosition[1]} | ${playerBoardPosition[2]} | ${playerBoardPosition[3]} |"
+   echo "    |___|___|___|"
+   echo "    | ${playerBoardPosition[4]} | ${playerBoardPosition[5]} | ${playerBoardPosition[6]} |"
+   echo "    |___|___|___|"
+   echo "    | ${playerBoardPosition[7]} | ${playerBoardPosition[8]} | ${playerBoardPosition[9]} |"
+   echo "    |___|___|___|"
+
+}
+displayBoard
+
