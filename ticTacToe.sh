@@ -15,4 +15,15 @@ function initialisingBoard()
 		playerBoardPosition[$i]=0
 	done
 }
-initialisingBoard
+
+function playerSymbol() {
+	
+	local chooseSymbol=$(( RANDOM % 2 ))
+	if [ $chooseSymbol -eq 0 ]
+	then
+		player="X"
+	else
+		player="O"	
+	fi
+}
+playerSymbol
