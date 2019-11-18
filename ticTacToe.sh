@@ -53,27 +53,22 @@ function toss() {
         else
 		whoPlay=$computer
 	fi
-	echo $whoPlay
+	
 }
 
 function playerPlay() {       
 	
-	if [ ${playerBoardPosition[1]} != $computer ]
+        read -p "Enter the player position to insert the $player :" position 
+	if [[ ${playerBoardPosition[$position]} != $player ]] && [[ ${playerBoardPosition[$position]} != $computer ]]
 	then 
-		read -p "Enter the player position to insert the $player :" position 
 	        playerBoardPosition[$position]=$player
-        fi
+        else
+		echo "the position is already filled retry"
+                playerPlay
+	fi
 }
 
-function ComputerPlay() {
-	
-	if [ ${playerBoardPosition[1]} != $player ]
-	then
-		read -p "Enter the player position to insert the $computer :" position 
-	        playerBoardPosition[$position]=$computer
-        fi
-	
-}
+
 function displayBoard() {
       
 	echo "     ___ ___ ___ "
@@ -102,11 +97,12 @@ function checkWinnerRowColumn() {
 	
 }
 
+
 function checkWinner() {
                 
 	if [[ $1 == $2  ]] && [[ $1 == $3 ]] && [[ $2 == $3 ]]  
 	then
-		echo " $player wins "
+		echo " $whoPlay wins "
 		exit
 		
 	fi      
@@ -125,19 +121,17 @@ function checkWinnerDiagonal() {
 initialisingBoard
 playerSymbol
 computerSymbol
-swithPlayerCount=0
+toss
+swithPlayerCount=1
 while [ $swithPlayerCount -le $MAX_BOARD_POSITION ]
 do
 	
-	echo "play"
 	playerPlay
 	displayBoard
 	checkWinnerRowColumn
-	#checkWinnerColumn
 	checkWinnerDiagonal
         ((swithPlayerCount++))
-
 done
-
+echo "tie"
 
 
