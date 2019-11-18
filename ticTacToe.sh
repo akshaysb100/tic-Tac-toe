@@ -53,13 +53,13 @@ function toss() {
         else
 		whoPlay=$computer
 	fi
-	echo $whoPlay
+	
 }
 
 function playerPlay() {       
 	
         read -p "Enter the player position to insert the $player :" position 
-	if [ ${playerBoardPosition[$position]} != $player ]
+	if [[ ${playerBoardPosition[$position]} != $player ]] && [[ ${playerBoardPosition[$position]} != $computer ]]
 	then 
 	        playerBoardPosition[$position]=$player
         else
@@ -67,6 +67,7 @@ function playerPlay() {
                 playerPlay
 	fi
 }
+
 
 function displayBoard() {
       
@@ -101,7 +102,7 @@ function checkWinner() {
                 
 	if [[ $1 == $2  ]] && [[ $1 == $3 ]] && [[ $2 == $3 ]]  
 	then
-		echo " $player wins "
+		echo " $whoPlay wins "
 		exit
 		
 	fi      
@@ -120,11 +121,11 @@ function checkWinnerDiagonal() {
 initialisingBoard
 playerSymbol
 computerSymbol
-swithPlayerCount=0
+toss
+swithPlayerCount=1
 while [ $swithPlayerCount -le $MAX_BOARD_POSITION ]
 do
 	
-	echo "play"
 	playerPlay
 	displayBoard
 	checkWinnerRowColumn
@@ -132,5 +133,6 @@ do
         ((swithPlayerCount++))
 done
 
+echo "tie"
 
 
