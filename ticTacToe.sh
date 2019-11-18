@@ -86,39 +86,24 @@ function displayBoard() {
 
 }
 
-function checkWinnerRow() {
+function checkWinnerRowColumn() {
 
 	local loopCounter=0
-        local positions=1
+        local rowPosi=1
+        local columPosi=1
 	while [ $loopCounter != 3 ]
 	do
-                 
-                 checkWinner ${playerBoardPosition[$positions]} ${playerBoardPosition[$positions+1]} ${playerBoardPosition[$positions+2]}  
+                 checkWinner ${playerBoardPosition[$rowPosi]} ${playerBoardPosition[$rowPosi+1]} ${playerBoardPosition[$rowPosi+2]}  
+                 checkWinner ${playerBoardPosition[$columPosi]} ${playerBoardPosition[$columPosi+3]} ${playerBoardPosition[$columPosi+6]}  
+		 columPosi=$(($columPosi+1))		 
 		 positions=$(($positions+3))
 		 loopCounter=$(($loopCounter+1))
 	done        
 	
 }
 
-function checkWinnerColumn() {
-
-        local loopCounter=0
-        local positions=1
-	while [ $loopCounter != 3 ]
-	do
-                 
-                 checkWinner ${playerBoardPosition[$positions]} ${playerBoardPosition[$positions+3]} ${playerBoardPosition[$positions+6]}  
-		 positions=$(($positions+1))
-		 loopCounter=$(($loopCounter+1))
-	done     
-              
-}
-
 function checkWinner() {
-                 
-       # echo "1" $1
-       # echo "2" $2
-       # echo "3" $3
+                
 	if [[ $1 == $2  ]] && [[ $1 == $3 ]] && [[ $2 == $3 ]]  
 	then
 		echo " $player wins "
@@ -131,17 +116,10 @@ function checkWinnerDiagonal() {
 
 	local loopCounter=0
         local positions=1
-    
-	if [[ ${playerBoardPosition[$positions]} == $player ]] && [[ ${playerBoardPosition[$positions+4]} == $player ]] && 				[[ ${playerBoardPosition[$positions+8]} == $player ]]  
-	then
-		echo " $player wins "
-		exit
+        
+        checkWinner ${playerBoardPosition[$positions]} ${playerBoardPosition[$positions+4]} ${playerBoardPosition[$positions+8]}  
+	checkWinner ${playerBoardPosition[$positions+2]} ${playerBoardPosition[$positions+4]} ${playerBoardPosition[$positions+6]}  
 		
-	elif [[ ${playerBoardPosition[$positions+2]} == $player ]] && [[ ${playerBoardPosition[$positions+4]} == $player ]] && 			[[ ${playerBoardPosition[$positions+6]} == $player ]] 
-        then
-		echo " $player wins" 
-                exit
-        fi
 }
 
 initialisingBoard
@@ -154,10 +132,10 @@ do
 	echo "play"
 	playerPlay
 	displayBoard
-	checkWinnerRow
-	checkWinnerColumn
+	checkWinnerRowColumn
+	#checkWinnerColumn
 	checkWinnerDiagonal
         ((swithPlayerCount++))
 done
-
+echo "tie"
 
