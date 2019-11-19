@@ -70,7 +70,7 @@ function playerPlay() {
 
 function computerPlayToWin() {       
 	
-        if [[ $1 == $computer ]] || [[ $2 == $computer ]] && [[ $1 == $2 ]] && [[ $3 == $4 ]] 
+        if [[ $1 == $5 ]] || [[ $2 == $5 ]] && [[ $1 == $2 ]] && [[ $3 == $4 ]] && [[ $movePosition == true ]]
  	then
                 echo "insert computer winning position"
 	        playerBoardPosition[$4]=$computer
@@ -86,24 +86,27 @@ function checkWinningPosition() {
         while [[ $loopCounter != 3 ]] && [[ $movePosition == true ]]
 	do
 	position=$rowPosi
-        computerPlayToWin ${playerBoardPosition[$rowPosi+$1]} ${playerBoardPosition[$rowPosi+$2]} ${playerBoardPosition[$rowPosi]} $position
+        computerPlayToWin ${playerBoardPosition[$rowPosi+$1]} ${playerBoardPosition[$rowPosi+$2]} ${playerBoardPosition[$rowPosi]} $position $4
         position=$(( $rowPosi + $1 ))
-        computerPlayToWin ${playerBoardPosition[$rowPosi]} ${playerBoardPosition[$rowPosi+$2]} ${playerBoardPosition[$rowPosi+$1]} $position
+        computerPlayToWin ${playerBoardPosition[$rowPosi]} ${playerBoardPosition[$rowPosi+$2]} ${playerBoardPosition[$rowPosi+$1]} $position $4
         position=$(( $rowPosi + $2 ))
-        computerPlayToWin ${playerBoardPosition[$rowPosi]} ${playerBoardPosition[$rowPosi+$1]} ${playerBoardPosition[$rowPosi+$2]} $position
+        computerPlayToWin ${playerBoardPosition[$rowPosi]} ${playerBoardPosition[$rowPosi+$1]} ${playerBoardPosition[$rowPosi+$2]} $position $4
 	rowPosi=$(($rowPosi+$3))
 	loopCounter=$(($loopCounter+1))
 	done
         
 }
 
-function checkWinRow() {
+function checkWinBlock() {
         local rowFirst=1
         local rowSecond=2
         local loopcount=3
-        checkWinningPosition $rowFirst $rowSecond $loopcount
+        local compSymbol=$computer
+        checkWinningPosition $rowFirst $rowSecond $loopcount $compSymbol        
+        checkWinningPositionDiagonal $compSymbol    
         checkWinColumn
-        checkWinningPositionDiagonal
+        checkWinningPosition $rowFirst $rowSecond $loopcount $player
+        checkWinningPositionDiagonal $player
         if [ $movePosition == true ]
         then
                 ComputerPlay     
@@ -113,27 +116,36 @@ function checkWinRow() {
 }
 
 function checkWinColumn() {
-        local rowFirst=3
-        local rowSecond=6
+        local colFirst=3
+        local colSecond=6
         local loopcount=1
-        checkWinningPosition $rowFirst $rowSecond $loopcount
+        local compSymbol=$computer
+        checkWinningPosition $colFirst $colSecond $loopcount $compSymbol
+        checkWinningPosition $colFirst $colSecond $loopcount $player
 }
 
 function checkWinningPositionDiagonal() {
      
         daiPosi=1
-        position=daiPosi
-        computerPlayToWin ${playerBoardPosition[$daiPosi+4]} ${playerBoardPosition[$daiPosi+8]} ${playerBoardPosition[$daiPosi]} $position
+        position=$daiPosi
+        s=""
+        if [ $1 == $player ]
+        then
+                s=$player
+        else
+                s=$computer
+        fi
+        computerPlayToWin ${playerBoardPosition[$daiPosi+4]} ${playerBoardPosition[$daiPosi+8]} ${playerBoardPosition[$daiPosi]} $position $s
         position=$(($daiPosi+4))
-        computerPlayToWin ${playerBoardPosition[$daiPosi]} ${playerBoardPosition[$daiPosi+8]} ${playerBoardPosition[$daiPosi+4]} $position
+        computerPlayToWin ${playerBoardPosition[$daiPosi]} ${playerBoardPosition[$daiPosi+8]} ${playerBoardPosition[$daiPosi+4]} $position $s
         position=$(($daiPosi+8))
-        computerPlayToWin ${playerBoardPosition[$daiPosi]} ${playerBoardPosition[$daiPosi+4]} ${playerBoardPosition[$daiPosi+8]} $position
+        computerPlayToWin ${playerBoardPosition[$daiPosi]} ${playerBoardPosition[$daiPosi+4]} ${playerBoardPosition[$daiPosi+8]} $position $s
         position=$(($daiPosi+2))
-        computerPlayToWin ${playerBoardPosition[$daiPosi+4]} ${playerBoardPosition[$daiPosi+6]} ${playerBoardPosition[$daiPosi+2]} $position
+        computerPlayToWin ${playerBoardPosition[$daiPosi+4]} ${playerBoardPosition[$daiPosi+6]} ${playerBoardPosition[$daiPosi+2]} $position $s
         position=$(($daiPosi+4))
-        computerPlayToWin ${playerBoardPosition[$daiPosi+2]} ${playerBoardPosition[$daiPosi+6]} ${playerBoardPosition[$daiPosi+4]} $position
+        computerPlayToWin ${playerBoardPosition[$daiPosi+2]} ${playerBoardPosition[$daiPosi+6]} ${playerBoardPosition[$daiPosi+4]} $position $s
         position=$(($daiPosi+6))
-        computerPlayToWin ${playerBoardPosition[$daiPosi+2]} ${playerBoardPosition[$daiPosi+4]} ${playerBoardPosition[$daiPosi+6]} $position
+        computerPlayToWin ${playerBoardPosition[$daiPosi+2]} ${playerBoardPosition[$daiPosi+4]} ${playerBoardPosition[$daiPosi+6]} $position $s
 	
 	
 }
@@ -226,7 +238,7 @@ do
                 checkWinnerDiagonal 
                 whoPlay=$computer
 	else
-		checkWinRow
+		checkWinBlock
 	        checkWinnerRowColumn
                 checkWinnerDiagonal 
 		whoPlay=$player
