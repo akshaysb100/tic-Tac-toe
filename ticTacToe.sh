@@ -89,6 +89,18 @@ function checkCorners() {
         fi
 }
 
+function checkCentre() {
+
+        if [ $movePosition == true ]
+        then
+        if [ ${playerBoardPosition[$i]} == 5 ]
+        then
+                 playerBoardPosition[$i]=$1
+                 movePosition=false
+        fi
+        fi
+}
+
 function computerPlayToWin() {       
 	
         if [[ $1 == $5 ]] || [[ $2 == $5 ]] && [[ $1 == $2 ]] && [[ $3 == $4 ]] && [[ $movePosition == true ]]
@@ -132,6 +144,7 @@ function checkWinBlock() {
         checkWinningPosition $rowFirst $rowSecond $loopcount $player
         checkWinningPositionDiagonal $player
         checkCorners $compSymbol
+        checkCentre $compSymbol
         if [ $movePosition == true ]
         then
                 ComputerPlay     
