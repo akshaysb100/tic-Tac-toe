@@ -68,6 +68,27 @@ function playerPlay() {
 	fi
 }
 
+function checkCorners() {
+
+        if [ $movePosition == true ]
+        then
+        for (( i=1; i<=$MAX_BOARD_POSITION; i=$(($i+2)) ))
+        do
+          
+                if [ ${playerBoardPosition[$i]} == $i ]
+                then             
+                        playerBoardPosition[$i]=$1
+                        movePosition=false
+                        break
+                fi
+                if [ $i -eq 3 ]
+                then
+                        i=$(( $i + 2 ))
+                fi
+        done 
+        fi
+}
+
 function computerPlayToWin() {       
 	
         if [[ $1 == $5 ]] || [[ $2 == $5 ]] && [[ $1 == $2 ]] && [[ $3 == $4 ]] && [[ $movePosition == true ]]
@@ -78,6 +99,8 @@ function computerPlayToWin() {
                 
 	fi	
 }
+
+
 function checkWinningPosition() {
 	
         local loopCounter=0
@@ -102,11 +125,13 @@ function checkWinBlock() {
         local rowSecond=2
         local loopcount=3
         local compSymbol=$computer
+        
         checkWinningPosition $rowFirst $rowSecond $loopcount $compSymbol        
         checkWinningPositionDiagonal $compSymbol    
         checkWinColumn
         checkWinningPosition $rowFirst $rowSecond $loopcount $player
         checkWinningPositionDiagonal $player
+        checkCorners $compSymbol
         if [ $movePosition == true ]
         then
                 ComputerPlay     
