@@ -93,7 +93,7 @@ function checkCentre() {
 
         if [ $movePosition == true ]
         then
-        if [ ${playerBoardPosition[$i]} == 5 ]
+        if [ ${playerBoardPosition[5]} -eq 5 ]
         then
                  playerBoardPosition[$i]=$1
                  movePosition=false
@@ -101,6 +101,25 @@ function checkCentre() {
         fi
 }
 
+function checkSide() {
+        
+        if [ $movePosition == true ]
+        then
+        for (( i=2; i<=$MAX_BOARD_POSITION; i=$(($i+2)) ))
+        do
+          
+                if [ ${playerBoardPosition[$i]} == $i ]
+                then 
+                        echo "$i"            
+                        playerBoardPosition[$i]=$1
+                        movePosition=false
+                        break
+                fi
+        done 
+        fi
+
+
+}
 function computerPlayToWin() {       
 	
         if [[ $1 == $5 ]] || [[ $2 == $5 ]] && [[ $1 == $2 ]] && [[ $3 == $4 ]] && [[ $movePosition == true ]]
