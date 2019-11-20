@@ -6,8 +6,8 @@ echo "Welcome Tic-Tac-Toe Program"
 MAX_BOARD_POSITION=9
 
 #VARIABLE
-player=""
-computer=""
+playerSymbol=""
+computerSymbol=""
 whoPlay=""
 movePosition=true
 swithPlayerCount=1
@@ -23,26 +23,18 @@ function initialisingBoard()
 	done
 }
 
-function playerSymbol() {
+function SymbolAssignment() {
 	
 	local chooseSymbol=$(( RANDOM % 2 ))
 	if [ $chooseSymbol -eq 0 ]
 	then
-		player="X"
+		playerSymbol="X"
+                computerSymbol="O"
 	else
-		player="O"	
+		playerSymbol="O"
+                computerSymbol="X"	
 	fi
         
-}
-
-function computerSymbol() {
-  	playerSymbol
-	if [ "$player" = "X" ]
-	then
-		computer="O"
-	else
-		computer="X"
-	fi
 }
 
 function toss() {
@@ -50,18 +42,18 @@ function toss() {
         local checkPlayFirst=$(( RANDOM % 2 ))
 	if [ $checkPlayFirst -eq 0 ]
 	then
-		whoPlay=$player
+		whoPlay=$playerSymbol
         else
-		whoPlay=$computer
+		whoPlay=$computerSymbol
 	fi	
 }
 
 function playerPlay() {       
 	
-        read -p "Enter the player position to insert the $player :" position 
-	if [[ ${playerBoardPosition[$position]} != $player ]] && [[ ${playerBoardPosition[$position]} != $computer ]]
+        read -p "Enter the player position to insert the $playerSymbol :" position 
+	if [[ ${playerBoardPosition[$position]} != $playerSymbol ]] && [[ ${playerBoardPosition[$position]} != $computerSymbol ]]
 	then 
-	        playerBoardPosition[$position]=$player
+	        playerBoardPosition[$position]=$playerSymbol
         else
 		echo "the position is already filled retry"
                 playerPlay
@@ -93,9 +85,10 @@ function checkCentre() {
 
         if [ $movePosition == true ]
         then
-        if [ ${playerBoardPosition[5]} -eq 5 ]
+        if [ ${playerBoardPosition[5]} == 5 ]
         then
-                 playerBoardPosition[$i]=$1
+                        
+                 playerBoardPosition[5]=$1
                  movePosition=false
         fi
         fi
@@ -109,8 +102,7 @@ function checkSide() {
         do
           
                 if [ ${playerBoardPosition[$i]} == $i ]
-                then 
-                        echo "$i"            
+                then            
                         playerBoardPosition[$i]=$1
                         movePosition=false
                         break
@@ -122,10 +114,10 @@ function checkSide() {
 }
 function computerPlayToWin() {       
 	
-        if [[ $1 == $5 ]] || [[ $2 == $5 ]] && [[ $1 == $2 ]] && [[ $3 == $4 ]] && [[ $movePosition == true ]]
+        if [[ ${playerBoardPosition[$1]} == $5 ]] || [[ ${playerBoardPosition[$2]} == $5 ]] && [[ ${playerBoardPosition[$1]} == ${playerBoardPosition[$2]} ]] && [[ ${playerBoardPosition[$3]} == $4 ]] && [[ $movePosition == true ]]
  	then
-                echo "insert computer winning position"
-	        playerBoardPosition[$4]=$computer
+                echo "insert computer winning position or bolcking position"
+	        playerBoardPosition[$4]=$computerSymbol
                 movePosition=false
                 
 	fi	
@@ -140,11 +132,11 @@ function checkWinningPosition() {
         while [[ $loopCounter != 3 ]] && [[ $movePosition == true ]]
 	do
 	position=$rowPosi
-        computerPlayToWin ${playerBoardPosition[$rowPosi+$1]} ${playerBoardPosition[$rowPosi+$2]} ${playerBoardPosition[$rowPosi]} $position $4
+        computerPlayToWin $(($rowPosi+$1)) $(($rowPosi+$2)) $(($rowPosi)) $position $4
         position=$(( $rowPosi + $1 ))
-        computerPlayToWin ${playerBoardPosition[$rowPosi]} ${playerBoardPosition[$rowPosi+$2]} ${playerBoardPosition[$rowPosi+$1]} $position $4
+        computerPlayToWin $(($rowPosi)) $(($rowPosi+$2)) $(($rowPosi+$1)) $position $4
         position=$(( $rowPosi + $2 ))
-        computerPlayToWin ${playerBoardPosition[$rowPosi]} ${playerBoardPosition[$rowPosi+$1]} ${playerBoardPosition[$rowPosi+$2]} $position $4
+        computerPlayToWin $(($rowPosi)) $(($rowPosi+$1)) $(($rowPosi+$2)) $position $4
 	rowPosi=$(($rowPosi+$3))
 	loopCounter=$(($loopCounter+1))
 	done
@@ -154,65 +146,52 @@ function checkWinningPosition() {
 function checkWinBlock() {
         local rowFirst=1
         local rowSecond=2
-        local loopcount=3
-        local compSymbol=$computer
-        
-        checkWinningPosition $rowFirst $rowSecond $loopcount $compSymbol        
-        checkWinningPositionDiagonal $compSymbol    
-        checkWinColumn
-        checkWinningPosition $rowFirst $rowSecond $loopcount $player
-        checkWinningPositionDiagonal $player
-        checkCorners $compSymbol
-        checkCentre $compSymbol
-        if [ $movePosition == true ]
-        then
-                ComputerPlay     
-        fi
-	movePosition=true
-        
+        local loopcount=3        
+        checkWinningPosition $rowFirst $rowSecond $loopcount $1        
+        checkWinningPositionDiagonal $1 
+        checkWinColumn      
 }
 
 function checkWinColumn() {
         local colFirst=3
         local colSecond=6
         local loopcount=1
-        local compSymbol=$computer
-        checkWinningPosition $colFirst $colSecond $loopcount $compSymbol
-        checkWinningPosition $colFirst $colSecond $loopcount $player
+        checkWinningPosition $colFirst $colSecond $loopcount $computerSymbol
+        checkWinningPosition $colFirst $colSecond $loopcount $playerSymbol
 }
 
 function checkWinningPositionDiagonal() {
      
         daiPosi=1
         position=$daiPosi
-        s=""
-        if [ $1 == $player ]
+        local symbol=""
+        if [ $1 == $playerSymbol ]
         then
-                s=$player
+                symbol=$playerSymbol
         else
-                s=$computer
+                symbol=$computerSymbol
         fi
-        computerPlayToWin ${playerBoardPosition[$daiPosi+4]} ${playerBoardPosition[$daiPosi+8]} ${playerBoardPosition[$daiPosi]} $position $s
+        computerPlayToWin $(($daiPosi+4)) $(($daiPosi+8)) $(($daiPosi)) $position $symbol
         position=$(($daiPosi+4))
-        computerPlayToWin ${playerBoardPosition[$daiPosi]} ${playerBoardPosition[$daiPosi+8]} ${playerBoardPosition[$daiPosi+4]} $position $s
+        computerPlayToWin $(($daiPosi)) $(($daiPosi+8)) $(($daiPosi+4)) $position $symbol
         position=$(($daiPosi+8))
-        computerPlayToWin ${playerBoardPosition[$daiPosi]} ${playerBoardPosition[$daiPosi+4]} ${playerBoardPosition[$daiPosi+8]} $position $s
+        computerPlayToWin $(($daiPosi)) $(($daiPosi+4)) $(($daiPosi+8)) $position $symbol
         position=$(($daiPosi+2))
-        computerPlayToWin ${playerBoardPosition[$daiPosi+4]} ${playerBoardPosition[$daiPosi+6]} ${playerBoardPosition[$daiPosi+2]} $position $s
+        computerPlayToWin $((daiPosi+4)) $(($daiPosi+6)) $(($daiPosi+2)) $position $symbol
         position=$(($daiPosi+4))
-        computerPlayToWin ${playerBoardPosition[$daiPosi+2]} ${playerBoardPosition[$daiPosi+6]} ${playerBoardPosition[$daiPosi+4]} $position $s
+        computerPlayToWin $(($daiPosi+2)) $(($daiPosi+6)) $(($daiPosi+4)) $position $symbol
         position=$(($daiPosi+6))
-        computerPlayToWin ${playerBoardPosition[$daiPosi+2]} ${playerBoardPosition[$daiPosi+4]} ${playerBoardPosition[$daiPosi+6]} $position $s
+        computerPlayToWin $(($daiPosi+2)) $(($daiPosi+4)) $(($daiPosi+6)) $position $symbol
 	
 	
 }
 function ComputerPlay() {
 
         local computerPosition=$((RANDOM%9+1))       
-        if [[ ${playerBoardPosition[$computerPosition]} != $player ]] && [[ ${playerBoardPosition[$computerPosition]} != $computer ]]
+        if [[ ${playerBoardPosition[$computerPosition]} != $playerSymbol ]] && [[ ${playerBoardPosition[$computerPosition]} != $computerSymbol ]]
 	then 
                 echo "insert computer position random"
-	        playerBoardPosition[$computerPosition]=$computer
+	        playerBoardPosition[$computerPosition]=$computerSymbol
                 
         else
 		echo "coputer wrong move"
@@ -255,7 +234,7 @@ function checkWinner() {
 	if [[ $1 == $2  ]] && [[ $1 == $3 ]] && [[ $2 == $3 ]]  
 	then
  		displayBoard
-		if [ $whoPlay == $player ]
+		if [ $whoPlay == $playerSymbol ]
 		then			
 			echo "player win"
                 else
@@ -279,26 +258,30 @@ function checkWinnerDiagonal() {
 echo  "--------------------------- main function --------------------------------"
 
 initialisingBoard
-playerSymbol
-computerSymbol
+SymbolAssignment
 toss
-echo "computer symbole" $computer
-echo "player symbole" $player
+echo "computer symbol" $computerSymbol
+echo "player symbol" $playerSymbol
 echo "play first " $whoPlay
 while [ $swithPlayerCount -le $MAX_BOARD_POSITION ]
 do
-       
-        if [ $whoPlay == $player ]
+
+        if [ $whoPlay == $playerSymbol ]
 	then    
 		playerPlay
 		checkWinnerRowColumn
                 checkWinnerDiagonal 
-                whoPlay=$computer
+                whoPlay=$computerSymbol
 	else
-		checkWinBlock
+		checkWinBlock $computerSymbol
+                checkWinBlock $playerSymbol
+                checkCorners $computerSymbol
+                checkCentre $computerSymbol
+                checkSide $computerSymbol
 	        checkWinnerRowColumn
                 checkWinnerDiagonal 
-		whoPlay=$player
+		whoPlay=$playerSymbol
+                movePosition=true
 	fi
 
 	displayBoard
